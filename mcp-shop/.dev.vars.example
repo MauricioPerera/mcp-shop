@@ -1,0 +1,6 @@
+# Copy to .dev.vars for local `wrangler dev`. Generate values with:
+#   node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
+AUTH_TOKEN=
+ADMIN_AUTH_TOKEN=
+WEBHOOK_SECRET=
+PUBLIC_URL=http://127.0.0.1:8787

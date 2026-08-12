@@ -1,0 +1,26 @@
+{
+  "name": "mcp-shop",
+  "main": "src/index.ts",
+  "compatibility_date": "2025-01-01",
+  "compatibility_flags": ["nodejs_compat"],
+  "vars": {
+    "PUBLIC_URL": "https://mcp-shop.rckflr.workers.dev"
+  },
+  "durable_objects": {
+    "bindings": [
+      { "name": "MCP_SHOP", "class_name": "ShopMCP" },
+      { "name": "MCP_SHOP_ADMIN", "class_name": "ShopAdminMCP" }
+    ]
+  },
+  "migrations": [
+    { "tag": "v1", "new_sqlite_classes": ["ShopMCP"] },
+    { "tag": "v2", "new_sqlite_classes": ["ShopAdminMCP"] }
+  ],
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "shop-db",
+      "database_id": "2cb1beb6-427c-4701-b20a-63bb961a532c"
+    }
+  ]
+}
