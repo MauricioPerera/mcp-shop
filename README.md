@@ -1,5 +1,7 @@
 # mcp-shop
 
+[![Tests](https://github.com/MauricioPerera/mcp-shop/actions/workflows/test.yml/badge.svg)](https://github.com/MauricioPerera/mcp-shop/actions/workflows/test.yml)
+
 An e-commerce backend exposed entirely through **MCP (Model Context Protocol)**
 instead of a REST API or an admin UI — the idea being "WooCommerce, but the
 only client is an AI agent." A sales agent and an admin agent talk to two
