@@ -21,6 +21,15 @@ jobs:
           cache: npm
           cache-dependency-path: mcp-shop/package-lock.json
 
+      - name: Create .dev.vars for tests
+        run: |
+          cat > .dev.vars <<'EOF'
+          AUTH_TOKEN=ci-test-auth-token
+          ADMIN_AUTH_TOKEN=ci-test-admin-token
+          WEBHOOK_SECRET=ci-test-webhook-secret
+          PUBLIC_URL=http://127.0.0.1:8787
+          EOF
+
       - run: npm ci
       - run: npm run typecheck
       - run: npm test
