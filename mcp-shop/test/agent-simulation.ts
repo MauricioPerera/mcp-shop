@@ -71,19 +71,36 @@ async function main() {
   });
   const orderText = textOf(orderResult as any);
   log("create_order", orderText);
-  const order = JSON.parse(orderText) as { order_id?: string; status?: string };
-  if (order.status !== "confirmed" || !order.order_id) fail("create_order", "expected a confirmed order with an id");
+  const order = JSON.parse(orderText) as {
+    order_id?: string;
+    status?: string;
+    payment?: { checkout_url?: string };
+  };
+  if (order.status !== "pending" || !order.order_id || !order.payment?.checkout_url) {
+    fail("create_order", "expected a pending order with an id and a checkout_url");
+  }
 
-  // Agent double-checks the order exists via list_orders, filtering by its own customer_ref.
+  // Agent (or the customer, in reality) opens the checkout link and pays with a card
+  // that the mock gateway always approves.
+  const checkoutResponse = await fetch(order.payment!.checkout_url!, {
+    method: "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body: "card_number=4242424242424242",
+  });
+  log("POST checkout (pay)", `${checkoutResponse.status} ${await checkoutResponse.text()}`);
+  if (!checkoutResponse.ok) fail("checkout", "payment page did not return 2xx");
+
+  // Confirmation is async (webhook-driven) — the agent checks back via list_orders.
   const listResult = await client.callTool({
     name: "list_orders",
     arguments: { customer_ref: "agent-sim" },
   });
   const listText = textOf(listResult as any);
   log("list_orders", listText);
-  const list = JSON.parse(listText) as { items: Array<{ order_id: string; resource_uri: string }> };
+  const list = JSON.parse(listText) as { items: Array<{ order_id: string; status: string; resource_uri: string }> };
   const listedOrder = list.items.find((o) => o.order_id === order.order_id);
   if (!listedOrder) fail("list_orders", "order created above is not visible via list_orders");
+  if (listedOrder.status !== "confirmed") fail("list_orders", `expected status confirmed, got ${listedOrder.status}`);
 
   // Read the order resource by following the resource_uri list_orders gave us.
   const orderDoc = await client.readResource({ uri: listedOrder!.resource_uri });
